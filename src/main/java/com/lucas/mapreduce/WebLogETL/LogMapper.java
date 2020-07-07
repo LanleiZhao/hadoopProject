@@ -21,8 +21,8 @@ public class LogMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
         String line = value.toString();
 
         // 2 解析日志是否合法
-        LogBean bean = parseLog(line);
-
+//        LogBean bean = parseLog(line);
+        LogBean bean = parseLogv2(line);  // 2020/7/7
         if (!bean.isValid()) {
             return;
         }
@@ -32,7 +32,29 @@ public class LogMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
         // 3 输出
         context.write(k, NullWritable.get());
     }
-    // 解析日志
+
+    private LogBean parseLogv2(String line) {
+        String[] split = line.split("\"");
+        LogBean logBean = new LogBean();
+
+            String[] item1 = split[0].split(" ");
+            logBean.setRemote_addr(item1[0]);
+            logBean.setRemote_user(split[0].split("-")[1]);
+            logBean.setTime_local(item1[3].substring(1));
+            logBean.setRequest(split[1]);
+            logBean.setStatus(split[2].trim().split(" ")[0]);
+            logBean.setBody_bytes_sent(split[2].trim().split(" ")[1]);
+            logBean.setHttp_referer(split[3]);
+            logBean.setHttp_user_agent(split[split.length-2]);
+
+            if (Integer.parseInt(logBean.getStatus()) >= 400) {
+                logBean.setValid(false);
+            }
+        return logBean;
+    }
+
+    // 解析日志v1
+    @Deprecated
     private LogBean parseLog(String line) {
 
         LogBean logBean = new LogBean();

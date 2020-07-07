@@ -95,14 +95,14 @@ public class LogBean {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.valid);
-        sb.append("\001").append(this.remote_addr);
-        sb.append("\001").append(this.remote_user);
-        sb.append("\001").append(this.time_local);
-        sb.append("\001").append(this.request);
-        sb.append("\001").append(this.status);
-        sb.append("\001").append(this.body_bytes_sent);
-        sb.append("\001").append(this.http_referer);
-        sb.append("\001").append(this.http_user_agent);
+        sb.append("\t").append(this.remote_addr);
+        sb.append("\t").append(this.remote_user);
+        sb.append("\t").append(this.time_local);
+        sb.append("\t").append(this.request);
+        sb.append("\t").append(this.status);
+        sb.append("\t").append(this.body_bytes_sent);
+        sb.append("\t").append(this.http_referer);
+        sb.append("\t").append(this.http_user_agent);
 
         return sb.toString();
     }
