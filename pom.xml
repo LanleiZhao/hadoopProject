@@ -12,6 +12,7 @@
         <module>Kafka</module>
         <module>MapReduce</module>
         <module>Hdfs</module>
+        <module>Hbase</module>
     </modules>
 
     <dependencies>
