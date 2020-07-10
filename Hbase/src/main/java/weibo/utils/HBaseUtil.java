@@ -1,4 +1,4 @@
-package weibo.com.lucas.utils;
+package weibo.utils;
 
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -7,7 +7,7 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
-import weibo.com.lucas.constants.Constant;
+import weibo.constants.Constant;
 
 import java.io.IOException;
 
@@ -89,11 +89,37 @@ public class HBaseUtil {
 
         // 8 创建表
         admin.createTable(hTableDescriptor);
+        System.out.println(tableName+"表创建成功");
 
         // 9 释放资源
         admin.close();
         connection.close();
 
+    }
+
+    /**
+     * 删除表
+     * @param tableName
+     * @throws IOException
+     */
+    public static void deleteTable(String tableName) throws IOException {
+        if (!isTableExists(tableName)) {
+            System.out.println(tableName+"表不存在");
+          return;
+        }
+        Connection connection = ConnectionFactory.createConnection(Constant.CONFIGURATION);
+        Admin admin = connection.getAdmin();
+        TableName table = TableName.valueOf(tableName);
+        // 如果表处于禁用状态,直接删除
+        if (admin.isTableDisabled(table)) {
+            admin.deleteTable(table);
+        }else{
+            // 如果表在启用状态，则先禁用表，然后删除
+            admin.disableTable(table);
+            admin.deleteTable(table);
+        }
+        System.out.println(tableName+"删除成功");
+        connection.close();
     }
 
 }

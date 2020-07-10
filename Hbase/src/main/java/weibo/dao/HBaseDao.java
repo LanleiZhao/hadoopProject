@@ -1,19 +1,17 @@
-package weibo.com.lucas.dao;
+package weibo.dao;
 
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.util.Bytes;
-import weibo.com.lucas.constants.Constant;
+import weibo.constants.Constant;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * @author lucas
@@ -160,6 +158,7 @@ public class HBaseDao {
     public static void removeAttends(String uid, String... attends) throws IOException {
         // 判断输入是否合理
         if (uid == null || uid.length() <= 0 || attends.length <= 0 || attends == null) {
+            System.out.println("输入不合理");
             return;
         }
         // part1：操作关系表
@@ -202,5 +201,68 @@ public class HBaseDao {
         connection.close();
     }
 
+
+    /**
+     * 获取某个用户的初始化页面
+     * @param uid
+     */
+    public static void getInit(String uid) throws IOException {
+        // 获取Connection对象
+        Connection connection = ConnectionFactory.createConnection(Constant.CONFIGURATION);
+        // 获取收件箱表对象
+        Table inboxTable = connection.getTable(TableName.valueOf(Constant.INBOX_TABLE));
+        // 获取微博内容表对象
+        Table contentTable = connection.getTable(TableName.valueOf(Constant.CONTENT_TABLE));
+        // 创建收件箱表GET对象，并获取数据
+        Get get = new Get(Bytes.toBytes(uid));
+        Result result = inboxTable.get(get);
+        // 遍历获取的数据
+        for (Cell cell : result.rawCells()) {
+            byte[] rowKey = CellUtil.cloneValue(cell);
+            // 构建微博内容表GET对象
+            Get cGet = new Get(rowKey);
+            cGet.setMaxVersions();
+            // 获取该GET对象的数据内容
+            Result contentResult = contentTable.get(cGet);
+            for (Cell rawCell : contentResult.rawCells()) {
+                System.out.println("rowKey:"+Bytes.toString(CellUtil.cloneRow(rawCell))+"\t"
+                +"columnFamily:"+Bytes.toString(CellUtil.cloneFamily(rawCell))+"\t"
+                +"column:"+Bytes.toString(CellUtil.cloneQualifier(rawCell))+"\t"
+                +"value:"+Bytes.toString(CellUtil.cloneValue(rawCell)));
+            }
+
+        }
+        // 释放资源
+        contentTable.close();
+        inboxTable.close();
+        connection.close();
+    }
+
+    /**
+     *  通过过滤器，获取指定用户的所有微博内容
+     * @param uid
+     */
+    public static void getWeibo(String uid) throws IOException {
+        // 获取Connection连接对象
+        Connection connection = ConnectionFactory.createConnection(Constant.CONFIGURATION);
+        // 获取内容表
+        Table contentTable = connection.getTable(TableName.valueOf(Constant.CONTENT_TABLE));
+        // 创建一个scan对象
+        Scan scan = new Scan();
+        // 设置scan的行键过滤器
+        RowFilter rowFilter = new RowFilter(CompareFilter.CompareOp.EQUAL, new SubstringComparator(uid + "_"));
+        scan.setFilter(rowFilter);
+        // 获取数据
+        ResultScanner results = contentTable.getScanner(scan);
+        // 解析并输出
+        for (Result result : results) {
+            for (Cell cell : result.rawCells()) {
+                System.out.println("rowKey:"+Bytes.toString(CellUtil.cloneRow(cell))+"\t"
+                        +"columnFamily:"+Bytes.toString(CellUtil.cloneFamily(cell))+"\t"
+                        +"column:"+Bytes.toString(CellUtil.cloneQualifier(cell))+"\t"
+                        +"value:"+Bytes.toString(CellUtil.cloneValue(cell)));
+            }
+        }
+    }
 
 }
