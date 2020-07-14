@@ -13,6 +13,8 @@
         <module>MapReduce</module>
         <module>Hdfs</module>
         <module>Hbase</module>
+        <module>Kylin</module>
+        <module>Scala</module>
     </modules>
 
     <dependencies>
