@@ -15,6 +15,7 @@
         <module>Hbase</module>
         <module>Kylin</module>
         <module>Scala</module>
+        <module>Spark</module>
     </modules>
 
     <dependencies>

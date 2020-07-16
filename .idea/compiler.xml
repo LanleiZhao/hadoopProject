@@ -6,12 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MapReduce" />
-        <module name="Hbase" />
+        <module name="Kafka" />
         <module name="Hdfs" />
+        <module name="Hbase" />
+        <module name="MapReduce" />
         <module name="Kylin" />
         <module name="Scala" />
-        <module name="Kafka" />
+        <module name="Spark" />
       </profile>
     </annotationProcessing>
   </component>
