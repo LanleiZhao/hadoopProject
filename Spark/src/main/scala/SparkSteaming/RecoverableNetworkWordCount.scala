@@ -155,6 +155,15 @@ object RecoverableNetworkWordCount {
         """.stripMargin
       )
       System.exit(1)
+
+      /**
+       *  ip localhost
+       *  port 9999
+       *  outputPath hdfs://master:9000/spark/out
+       *  checkpointDir /checkpoint/recoverCheckpoint
+       */
+
+
     }
     val Array(ip, port, checkpointDirectory, outputPath) = args
     val ssc = StreamingContext.getOrCreate(checkpointDirectory,
