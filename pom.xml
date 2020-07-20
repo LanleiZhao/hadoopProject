@@ -16,6 +16,8 @@
         <module>Kylin</module>
         <module>Scala</module>
         <module>Spark</module>
+        <module>SparkExamles</module>
+        <module>Spark</module>
     </modules>
 
     <dependencies>

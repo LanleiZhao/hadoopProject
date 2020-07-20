@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="MapReduce" />
         <module name="Spark" />
+        <module name="SparkExamles" />
         <module name="Hbase" />
         <module name="Hdfs" />
         <module name="Kylin" />
