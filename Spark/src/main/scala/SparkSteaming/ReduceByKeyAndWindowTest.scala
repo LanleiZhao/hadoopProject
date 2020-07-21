@@ -9,7 +9,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
  * @author lucas
  * @create 2020-07-20-21:45
  */
-object UpdateStateByKeyWordCount {
+object ReduceByKeyAndWindowTest {
   def main(args: Array[String]): Unit = {
     // 初始化配置
     val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName).setMaster("local[*]")
@@ -20,23 +20,16 @@ object UpdateStateByKeyWordCount {
     ssc.sparkContext.setCheckpointDir("hdfs://master:9000/checkpoint")
     // 创建SocketDStream
     val inputDStream: ReceiverInputDStream[String] = ssc.socketTextStream("localhost", 9999)
-    // z整理数据
-//    val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1))
-val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1)).map { case (k, v) => ("total_count", 1) }
+    // 整理数据
+    val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1))
 
-    // 定义updateState函数
-    def updateFunction(values: Seq[Int], prev: Option[Int]): Option[Int] = {
-      val sum: Int = values.sum
-      val pr: Int = prev.getOrElse(0)
-      Option(sum + pr)
-    }
+    // 优化后的reduceByKeyAndWindow
+    val reduceDStream: DStream[(String, Int)] = wordAndOneDStream.reduceByKeyAndWindow(_ + _, _ - _, Seconds(15), Seconds(10))
 
-    // 有状态计算
-//    val updateStateDStream: DStream[(String, Int)] = wordAndOneDStream.updateStateByKey(updateFunction)
-
-      val updateStateDStream: DStream[(String, Int)] = wordAndOneDStream.updateStateByKey((values: Seq[Int], prev: Option[Int]) => (Option(sum(values) + prev.getOrElse(0))))
     // 打印结果
-    updateStateDStream.print()
+    reduceDStream.print()
+    // 输出到fs
+
     // 执行
     ssc.start()
     ssc.awaitTermination()

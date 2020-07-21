@@ -7,12 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="MapReduce" />
-        <module name="Spark" />
         <module name="SparkExamles" />
         <module name="Hbase" />
         <module name="Hdfs" />
         <module name="Kylin" />
         <module name="Scala" />
+        <module name="Spark" />
         <module name="Kafka" />
       </profile>
     </annotationProcessing>
