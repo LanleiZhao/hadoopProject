@@ -118,7 +118,7 @@
     </dependencies>
 
     <build>
-        <finalName>wc</finalName>
+        <finalName>streamingModule</finalName>
         <plugins>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>

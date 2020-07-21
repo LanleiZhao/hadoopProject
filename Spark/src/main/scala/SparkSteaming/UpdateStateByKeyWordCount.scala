@@ -11,6 +11,10 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
  */
 object UpdateStateByKeyWordCount {
   def main(args: Array[String]): Unit = {
+    if (args.length < 2) {
+      System.err.println("Usage: NetworkWordCount <hostname> <port>")
+      System.exit(1)
+    }
     // 初始化配置
     val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName).setMaster("local[*]")
     val ssc = new StreamingContext(conf, Seconds(5))
@@ -19,7 +23,7 @@ object UpdateStateByKeyWordCount {
     // 设置检查点目录，保存状态
     ssc.sparkContext.setCheckpointDir("hdfs://master:9000/checkpoint")
     // 创建SocketDStream
-    val inputDStream: ReceiverInputDStream[String] = ssc.socketTextStream("localhost", 9999)
+    val inputDStream: ReceiverInputDStream[String] = ssc.socketTextStream(args(0), args(1).toInt)
     // z整理数据
 //    val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1))
 val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1)).map { case (k, v) => ("total_count", 1) }

@@ -21,10 +21,10 @@ object SqlNetworkWordCountPractice {
       System.exit(1)
     }
     // 初始化配置信息
-    val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName).setMaster("local[*]")
+    val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName)
     // 初始化Spark-Streaming
     val ssc = new StreamingContext(conf, Seconds(5))
-    ssc.sparkContext.setLogLevel("Warn")
+//    ssc.sparkContext.setLogLevel("Warn")
     // 创建socketDStream
     val lineDStream: ReceiverInputDStream[String] = ssc.socketTextStream(args(0), args(1).toInt, StorageLevel.MEMORY_AND_DISK_SER)
     val wordDStream: DStream[String] = lineDStream.flatMap(_.split(" "))

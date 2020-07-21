@@ -11,15 +11,19 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
  */
 object ReduceByKeyAndWindowTest {
   def main(args: Array[String]): Unit = {
+    if (args.length < 2) {
+      System.err.println("Usage: NetworkWordCount <hostname> <port>")
+      System.exit(1)
+    }
     // 初始化配置
-    val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName).setMaster("local[*]")
+    val conf: SparkConf = new SparkConf().setAppName(this.getClass.getName)
     val ssc = new StreamingContext(conf, Seconds(5))
     // 设置日志级别
-    ssc.sparkContext.setLogLevel("Warn")
+//    ssc.sparkContext.setLogLevel("Warn")
     // 设置检查点目录，保存状态
     ssc.sparkContext.setCheckpointDir("hdfs://master:9000/checkpoint")
     // 创建SocketDStream
-    val inputDStream: ReceiverInputDStream[String] = ssc.socketTextStream("localhost", 9999)
+    val inputDStream: ReceiverInputDStream[String] = ssc.socketTextStream(args(0), args(1).toInt)
     // 整理数据
     val wordAndOneDStream: DStream[(String, Int)] = inputDStream.flatMap(_.split(" ")).map((_, 1))
 
